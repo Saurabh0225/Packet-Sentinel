@@ -1,0 +1,60 @@
+body {
+  background-color: #002335;
+  color: #14dcff;
+  font-family: "Courier New", monospace;
+  text-align: center;
+  padding: 2rem;
+}
+
+.heading {
+  margin: 0;
+}
+
+form {
+  margin: 30px;
+}
+
+input[type="file"],
+button {
+  padding: 0.5rem;
+  font-size: 18px;
+  margin-top: 1rem;
+  background-color: red;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.metrics {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.card {
+  background: #111;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px #14ebff;
+  width: 200px;
+}
+
+.alert {
+  background: #220000;
+  border: 1px solid red;
+  padding: 10px;
+  margin: 10px auto;
+  width: 60%;
+  box-shadow: 0 0 10px red;
+  font-weight: bold;
+}
+
+canvas {
+  background: #1d0b0b;
+  padding: 1rem;
+  border-radius: 10px;
+  max-width: 900px;
+  margin: 30px auto;
+  box-shadow: 0 0 20px #14bcff;
+}

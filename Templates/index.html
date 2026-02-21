@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Packet Sentinels</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<h1 class="heading">Packet Sentinels</h1>
+<h3 class="heading">Network Traffic Analyzer</h3>
+
+<form id="uploadForm" method="POST" enctype="multipart/form-data">
+  <input type="file" name="file" accept=".csv" required>
+  <button type="submit">Upload & Analyze</button>
+</form>
+
+<div id="dashboard" style="display:none;">
+
+  <div class="metrics">
+    <div class="card">
+      <h3>Total Packets</h3>
+      <p id="totalPackets"></p>
+    </div>
+
+    <div class="card">
+      <h3>Unique Sources</h3>
+      <p id="uniqueSources"></p>
+    </div>
+
+    <div class="card">
+      <h3>Unique Destinations</h3>
+      <p id="uniqueDestinations"></p>
+    </div>
+  </div>
+
+  <h2>Security Alerts</h2>
+  <div id="alertBox"></div>
+
+  <h2>Top Source IPs</h2>
+  <canvas id="sourceChart"></canvas>
+
+  <h2>Top Protocols</h2>
+  <canvas id="protocolChart"></canvas>
+
+</div>
+
+<script>
+const form = document.getElementById("uploadForm");
+
+let sourceChart;
+let protocolChart;
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const formData = new FormData(form);
+
+  const res = await fetch("/upload", {
+    method: "POST",
+    body: formData,
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.error);
+    return;
+  }
+
+  document.getElementById("dashboard").style.display = "block";
+
+  // Metrics
+  document.getElementById("totalPackets").innerText =
+    data.summary.total_packets;
+
+  document.getElementById("uniqueSources").innerText =
+    data.summary.unique_sources;
+
+  document.getElementById("uniqueDestinations").innerText =
+    data.summary.unique_destinations;
+
+  // Alerts
+  const alertBox = document.getElementById("alertBox");
+  alertBox.innerHTML = "";
+
+  data.alerts.forEach(alert => {
+    const div = document.createElement("div");
+    div.className = "alert";
+    div.innerText = alert;
+    alertBox.appendChild(div);
+  });
+
+  // Destroy old charts
+  if (sourceChart) sourceChart.destroy();
+  if (protocolChart) protocolChart.destroy();
+
+  // Source Chart
+  sourceChart = new Chart(document.getElementById("sourceChart"), {
+    type: "bar",
+    data: {
+      labels: data.top_sources.labels,
+      datasets: [{
+        label: "Top Sources",
+        data: data.top_sources.counts
+      }]
+    }
+  });
+
+  // Protocol Chart
+  protocolChart = new Chart(document.getElementById("protocolChart"), {
+    type: "bar",
+    data: {
+      labels: data.top_protocols.labels,
+      datasets: [{
+        label: "Top Protocols",
+        data: data.top_protocols.counts
+      }]
+    }
+  });
+
+});
+</script>
+
+</body>
+</html>
